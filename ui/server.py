@@ -23,7 +23,7 @@ TASK_TTL = 15 * 60 # Discard last session's task timeout
 APP_CONFIG_DEFAULTS = {
     # auto: selects the cuda device with the most free memory, cuda: use the currently active cuda device.
     'render_devices': ['auto'], # ['cuda'] or ['CPU', 'GPU:0', 'GPU:1', ...] or ['cpu']
-    'update_branch': 'main',
+    'update_branch': 'dh-dev',
 }
 APP_CONFIG_DEFAULT_MODELS = [
     # needed to support the legacy installations

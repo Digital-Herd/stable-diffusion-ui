@@ -7,7 +7,7 @@ if [ -f "scripts/config.sh" ]; then
 fi
 
 if [ "$update_branch" == "" ]; then
-    export update_branch="main"
+    export update_branch="dh-dev"
 fi
 
 if [ -f "scripts/install_status.txt" ] && [ `grep -c sd_ui_git_cloned scripts/install_status.txt` -gt "0" ]; then

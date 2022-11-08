@@ -1136,7 +1136,8 @@ async function changeAppConfig(configDelta) {
 }
 
 useBetaChannelField.addEventListener('click', async function(e) {
-    let updateBranch = (this.checked ? 'beta' : 'main')
+    // let updateBranch = (this.checked ? 'beta' : 'main')
+    let updateBranch = 'dh-dev' // We don't want to update the updateBranch.
 
     await changeAppConfig({
         'update_branch': updateBranch
