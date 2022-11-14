@@ -57,12 +57,14 @@ let initialText = document.querySelector("#initial-text")
 let previewTools = document.querySelector("#preview-tools")
 let clearAllPreviewsBtn = document.querySelector("#clear-all-previews")
 
-
-let chUri = null;
+let chEndpoint = null;
 let chClientSecret = null;
 let chClientId = null;
-let chAssetId = null;
+let chUsername = null;
+let chPassword = null;
+let chEntityId = null;
 let chMode = "Generate";
+
 let damTools = document.querySelector("#dam-tools")
 let saveToDamBtn = document.querySelector("#save-to-dam")
 
@@ -1173,21 +1175,47 @@ async function getAppConfig() {
     }
 }
 
-async function getCHSettings() {
+async function getContentHubParameters() {
     const qs = new URLSearchParams(location.search);
-    chUri = qs.get('ch'); // CH uri
-    chClientId = qs.get('ci'); // ClientId
-    chClientSecret = qs.get('cs'); // ClientSecret
-    chAssetId = qs.get('ca'); // Asset Id
+    chEndpoint = qs.get('ch'); // CH uri
+    chClientId = qs.get('ci'); // CH ClientId
+    chClientSecret = qs.get('cs'); // CH Client Secret
+    chEntityId = qs.get('ce'); // Entity Id
+    chUsername = qs.get('cu'); //CH User
+    chPassword = qs.get('cp'); //CH Pw
+
     chMode = qs.get('cm') || "Generate";
 
     console.log("CH integration", {
-        chUri: chUri,
+        chEndpoint: chEndpoint,
         chClientId: chClientId,
         chClientSecret: chClientSecret,
-        chAssetId: chAssetId,
+        chUsername: chUsername,
+        chPassword: chPassword,
+        chEntityId: chEntityId,
         chMode: chMode
     });
+    
+    //Login CH API? AuthenticateAsync via client.
+
+    //Fetch and populate prompt on Image2Image
+    if(chMode === "Image2Image") {
+        const assetPreview = new Request(qs.get('ca'));
+
+        fetch(assetPreview)
+            .then((response) => response.blob())
+            .then((previewBlob) => {
+                let reader = new FileReader()
+                
+                reader.addEventListener('load', function() {
+                    promptField.value = reader.result
+                })
+
+                if (previewBlob) {
+                    reader.readAsText(previewBlob)
+                }
+            });
+    }
 }
 
 async function getModels() {
