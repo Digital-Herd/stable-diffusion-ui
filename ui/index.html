@@ -20,7 +20,7 @@
         <div id="logo">
             <h1>Stable Diffusion UI <small>v2.3.10 <span id="updateBranchLabel"></span></small></h1>
         </div>
-        <ul id="top-nav-items">
+        <ul id="top-nav-items" style="display:none">
             <li class="dropdown">
                 <span><i class="fa fa-comments icon"></i> Help & Community</span>
                 <ul id="community-links" class="dropdown-content">
@@ -221,6 +221,9 @@
         </div>
 
         <div id="preview" class="col-free">
+            <div id="dam-tools">
+                <button id="save-to-dam" class="primaryButton"><i class="fa-solid fa-floppy-disk"></i>Save to DAM</button>
+            </div>
             <div id="initial-text">
                 Type a prompt and press the "Make Image" button.<br/><br/>You can set an "Initial Image" if you want to guide the AI.<br/><br/>You can also add modifiers like "Realistic", "Pencil Sketch", "ArtStation" etc by browsing through the "Image Modifiers" section and selecting the desired modifiers.<br/><br/>Click "Advanced Settings" for additional settings like seed, image size, number of images to generate etc.<br/><br/>Enjoy! :)
             </div>

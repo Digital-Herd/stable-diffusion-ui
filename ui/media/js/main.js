@@ -57,6 +57,15 @@ let initialText = document.querySelector("#initial-text")
 let previewTools = document.querySelector("#preview-tools")
 let clearAllPreviewsBtn = document.querySelector("#clear-all-previews")
 
+
+let chUri = null;
+let chClientSecret = null;
+let chClientId = null;
+let chAssetId = null;
+let chMode = "Generate";
+let damTools = document.querySelector("#dam-tools")
+let saveToDamBtn = document.querySelector("#save-to-dam")
+
 // let maskSetting = document.querySelector('#editor-inputs-mask_setting')
 // let maskImagePreviewContainer = document.querySelector('#mask_preview_container')
 // let maskImageClearBtn = document.querySelector('#mask_clear')
@@ -1026,6 +1035,10 @@ clearAllPreviewsBtn.addEventListener('click', async function() {
     initialText.style.display = 'block'
 })
 
+saveToDamBtn.addEventListener('click', async function() {
+
+})
+
 stopImageBtn.addEventListener('click', async function() {
     await stopAllTasks()
 })
@@ -1158,6 +1171,23 @@ async function getAppConfig() {
     } catch (e) {
         console.log('get config status error', e)
     }
+}
+
+async function getCHSettings() {
+    const qs = new URLSearchParams(location.search);
+    chUri = qs.get('ch'); // CH uri
+    chClientId = qs.get('ci'); // ClientId
+    chClientSecret = qs.get('cs'); // ClientSecret
+    chAssetId = qs.get('ca'); // Asset Id
+    chMode = qs.get('cm') || "Generate";
+
+    console.log("CH integration", {
+        chUri: chUri,
+        chClientId: chClientId,
+        chClientSecret: chClientSecret,
+        chAssetId: chAssetId,
+        chMode: chMode
+    });
 }
 
 async function getModels() {
