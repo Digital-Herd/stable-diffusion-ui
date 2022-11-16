@@ -18,7 +18,7 @@ interface ContentHubConfiguration {
     password: string;
 }
 
-export async function UploadToDam(config: ContentHubConfiguration, entityId: number, relationToTarget: string, imgSrc: string): Promise<boolean> {
+async function getAuthenticatedClient(config: ContentHubConfiguration): Promise<ContentHubClient> {
     const oauth = new OAuthPasswordGrant(
         config.clientId,
         config.clientSecret,
@@ -33,10 +33,42 @@ export async function UploadToDam(config: ContentHubConfiguration, entityId: num
         throw new Error(`Unable to authenticate to CH endpoint '${config.endpoint}'`);
     }
 
+    return client;
+}
+
+export async function UploadNewMasterFile(config: ContentHubConfiguration, entityId: number, imgSrc: string): Promise<boolean> {
+    const client = await getAuthenticatedClient(config);
+
     const resp = await fetch(imgSrc)
     const buffer = await resp.arrayBuffer()
 
-    const uploadSource = new ArrayBufferUploadSource(buffer, 'background.jpg');
+    const uploadSource = new ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
+
+    const request = new UploadRequest(
+        uploadSource,
+        'AssetUploadConfiguration',
+        'NewMainFile'
+    );
+
+    request.actionParameters = {
+        AssetId: entityId,
+    }
+
+    const result = await client.uploads.uploadAsync(request);
+    if (!result.isSuccessStatusCode) {
+        throw new Error(`Unable to upload file to DAM ${result.statusCode}: ${result.statusText}`);
+    }
+
+    return true;
+}
+
+export async function UploadNewAsset(config: ContentHubConfiguration, entityId: number, relationToTarget: string, imgSrc: string): Promise<boolean> {
+    const client = await getAuthenticatedClient(config);
+
+    const resp = await fetch(imgSrc)
+    const buffer = await resp.arrayBuffer()
+
+    const uploadSource = new ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
 
     const request = new UploadRequest(
         uploadSource,

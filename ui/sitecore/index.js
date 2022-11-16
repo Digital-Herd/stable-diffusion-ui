@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UploadToDam = void 0;
+exports.UploadNewAsset = exports.UploadNewMasterFile = void 0;
 const sc_contenthub_webclient_sdk_1 = require("@sitecore/sc-contenthub-webclient-sdk");
 const oauth_password_grant_1 = __importDefault(require("@sitecore/sc-contenthub-webclient-sdk/dist/authentication/oauth-password-grant"));
 const content_hub_client_1 = require("@sitecore/sc-contenthub-webclient-sdk/dist/clients/content-hub-client");
@@ -24,8 +24,7 @@ const relation_specification_1 = require("@sitecore/sc-contenthub-webclient-sdk/
 const link_1 = __importDefault(require("@sitecore/sc-contenthub-webclient-sdk/dist/link"));
 const array_buffer_upload_source_1 = require("@sitecore/sc-contenthub-webclient-sdk/dist/models/upload/array-buffer-upload-source");
 const upload_request_1 = require("@sitecore/sc-contenthub-webclient-sdk/dist/models/upload/upload-request");
-function UploadToDam(config, entityId, relationToTarget, imgSrc) {
-    var _a;
+function getAuthenticatedClient(config) {
     return __awaiter(this, void 0, void 0, function* () {
         const oauth = new oauth_password_grant_1.default(config.clientId, config.clientSecret, config.userName, config.password);
         const client = new content_hub_client_1.ContentHubClient(config.endpoint, oauth);
@@ -33,9 +32,34 @@ function UploadToDam(config, entityId, relationToTarget, imgSrc) {
         if (!authenticated) {
             throw new Error(`Unable to authenticate to CH endpoint '${config.endpoint}'`);
         }
+        return client;
+    });
+}
+function UploadNewMasterFile(config, entityId, imgSrc) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = yield getAuthenticatedClient(config);
         const resp = yield fetch(imgSrc);
         const buffer = yield resp.arrayBuffer();
-        const uploadSource = new array_buffer_upload_source_1.ArrayBufferUploadSource(buffer, 'background.jpg');
+        const uploadSource = new array_buffer_upload_source_1.ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
+        const request = new upload_request_1.UploadRequest(uploadSource, 'AssetUploadConfiguration', 'NewMainFile');
+        request.actionParameters = {
+            AssetId: entityId,
+        };
+        const result = yield client.uploads.uploadAsync(request);
+        if (!result.isSuccessStatusCode) {
+            throw new Error(`Unable to upload file to DAM ${result.statusCode}: ${result.statusText}`);
+        }
+        return true;
+    });
+}
+exports.UploadNewMasterFile = UploadNewMasterFile;
+function UploadNewAsset(config, entityId, relationToTarget, imgSrc) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = yield getAuthenticatedClient(config);
+        const resp = yield fetch(imgSrc);
+        const buffer = yield resp.arrayBuffer();
+        const uploadSource = new array_buffer_upload_source_1.ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
         const request = new upload_request_1.UploadRequest(uploadSource, 'AssetUploadConfiguration', 'NewAsset');
         const result = yield client.uploads.uploadAsync(request);
         if (!result.isSuccessStatusCode) {
@@ -58,4 +82,4 @@ function UploadToDam(config, entityId, relationToTarget, imgSrc) {
         return true;
     });
 }
-exports.UploadToDam = UploadToDam;
+exports.UploadNewAsset = UploadNewAsset;

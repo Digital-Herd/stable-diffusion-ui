@@ -63,6 +63,9 @@ let chClientId = null;
 let chUsername = null;
 let chPassword = null;
 let chEntityId = null;
+let chRelationName = null;
+let chAssetUri = null;
+let chConfig = {};
 let chMode = "Generate";
 
 // let maskSetting = document.querySelector('#editor-inputs-mask_setting')
@@ -324,15 +327,32 @@ function showImages(reqBody, res, outputContainer, livePreview) {
 }
 
 function onSaveToDamClick(req, img) {
-    window.Sitecore.UploadToDam({
-        endpoint: chEndpoint,
-        clientId: chClientId,
-        clientSecret: chClientSecret,
-        userName: chUsername,
-        password: chPassword
-    }, parseInt(chEntityId), "InstanceToBackground", img.src).then(result => {
-        console.log(result);
-    })
+    switch (chMode) {
+        case "Generate":
+            window.Sitecore.UploadNewAsset(chConfig,
+                parseInt(chEntityId),
+                "InstanceToBackground",
+                img.src)
+                .then(result => {
+                    if (result) {
+                        alert("Image saved to DAM.");
+                        window.parent.postMessage("back", "*");
+                    }
+                    
+                });
+            break;
+        case "Alter":
+            window.Sitecore.UploadNewMasterFile(chConfig,
+                parseInt(chEntityId),
+                img.src)
+                .then(result => {
+                    if (result) {
+                        alert("Image saved to DAM.");
+                        window.parent.postMessage("back", "*");
+                    }
+                });
+            break;
+    }
 }
 
 function onUseAsInputClick(req, img) {
@@ -1190,35 +1210,46 @@ async function getContentHubParameters() {
     chUsername = qs.get('cu'); //CH User
     chPassword = qs.get('cp'); //CH Pw
 
-    chMode = qs.get('cm') || "Generate";
+    chMode = qs.get('cm') || "Generate"; //Mode, defaults to Generate = New Asset. Alter = new main file.
 
-    console.log("CH integration", {
-        chEndpoint: chEndpoint,
-        chClientId: chClientId,
-        chClientSecret: chClientSecret,
-        chUsername: chUsername,
-        chPassword: chPassword,
+    //optional, mode dependent
+    chRelationName = qs.get('cr'); // RelationName
+    chAssetUri = qs.get('ca');
+
+    chConfig = {
+        endpoint: chEndpoint,
+        clientId: chClientId,
+        clientSecret: chClientSecret,
+        userName: chUsername,
+        password: chPassword
+    };
+
+    console.log("CH integration", chConfig, {
         chEntityId: chEntityId,
-        chMode: chMode
+        chMode: chMode,
+        chRelationName: chRelationName,
+        chAssetUri: chAssetUri
     });
     
-    //Login CH API? AuthenticateAsync via client.
-
     //Fetch and populate prompt on Image2Image
-    if(chMode === "Image2Image") {
-        const assetPreview = new Request(qs.get('ca'));
+    if (chMode === "Alter") {
+        console.log(`Loading asset ${chAssetUri} as base image.`);
 
-        fetch(assetPreview)
+        const assetPreview = new Request(chAssetUri);
+        await fetch(assetPreview)
             .then((response) => response.blob())
             .then((previewBlob) => {
                 let reader = new FileReader()
-                
-                reader.addEventListener('load', function() {
-                    promptField.value = reader.result
+                reader.addEventListener('load', function () {
+                    initImagePreview.src = reader.result
+                    initImagePreviewContainer.style.display = 'block'
+                    inpaintingEditorContainer.style.display = 'none'
+                    promptStrengthContainer.style.display = 'table-row'
+                    samplerSelectionContainer.style.display = 'none'
                 })
 
                 if (previewBlob) {
-                    reader.readAsText(previewBlob)
+                    reader.readAsDataURL(previewBlob)
                 }
             });
     }
