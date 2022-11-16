@@ -65,9 +65,6 @@ let chPassword = null;
 let chEntityId = null;
 let chMode = "Generate";
 
-let damTools = document.querySelector("#dam-tools")
-let saveToDamBtn = document.querySelector("#save-to-dam")
-
 // let maskSetting = document.querySelector('#editor-inputs-mask_setting')
 // let maskImagePreviewContainer = document.querySelector('#mask_preview_container')
 // let maskImageClearBtn = document.querySelector('#mask_clear')
@@ -292,6 +289,7 @@ function showImages(reqBody, res, outputContainer, livePreview) {
             imageSeedLabel.innerText = 'Seed: ' + req.seed
 
             let buttons = [
+                { text: 'Save to DAM', on_click: onSaveToDamClick },
                 { text: 'Use as Input', on_click: onUseAsInputClick },
                 { text: 'Download', on_click: onDownloadImageClick },
                 { text: 'Make Similar Images', on_click: onMakeSimilarClick },
@@ -322,6 +320,18 @@ function showImages(reqBody, res, outputContainer, livePreview) {
                 createButton(btn)
             })
         }
+    })
+}
+
+function onSaveToDamClick(req, img) {
+    window.Sitecore.UploadToDam({
+        endpoint: chEndpoint,
+        clientId: chClientId,
+        clientSecret: chClientSecret,
+        userName: chUsername,
+        password: chPassword
+    }, chEntityId, img.src).then(result => {
+        console.log(result);
     })
 }
 
@@ -1035,10 +1045,6 @@ clearAllPreviewsBtn.addEventListener('click', async function() {
 
     previewTools.style.display = 'none'
     initialText.style.display = 'block'
-})
-
-saveToDamBtn.addEventListener('click', async function() {
-
 })
 
 stopImageBtn.addEventListener('click', async function() {
