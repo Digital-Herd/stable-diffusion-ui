@@ -330,7 +330,7 @@ function onSaveToDamClick(req, img) {
         clientSecret: chClientSecret,
         userName: chUsername,
         password: chPassword
-    }, chEntityId, img.src).then(result => {
+    }, parseInt(chEntityId), "InstanceToBackground", img.src).then(result => {
         console.log(result);
     })
 }

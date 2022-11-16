@@ -18,7 +18,7 @@ interface ContentHubConfiguration {
     password: string;
 }
 
-export async function UploadToDam(config: ContentHubConfiguration, entityId: number, imgSrc: string): Promise<boolean> {
+export async function UploadToDam(config: ContentHubConfiguration, entityId: number, relationToTarget: string, imgSrc: string): Promise<boolean> {
     const oauth = new OAuthPasswordGrant(
         config.clientId,
         config.clientSecret,
@@ -40,7 +40,7 @@ export async function UploadToDam(config: ContentHubConfiguration, entityId: num
 
     const request = new UploadRequest(
         uploadSource,
-        'UserProfileBackgroundUploadConfiguration',
+        'AssetUploadConfiguration',
         'NewAsset'
     );
 
@@ -60,17 +60,17 @@ export async function UploadToDam(config: ContentHubConfiguration, entityId: num
     }
 
     const asset = await client.entities.getAsync(assetId, new EntityLoadConfiguration(CultureLoadOption.None,
-        PropertyLoadOption.None, new RelationLoadOption([new RelationSpecification("InstanceToBackground") ])))
+        PropertyLoadOption.None, new RelationLoadOption([new RelationSpecification(relationToTarget) ])))
 
     if (asset == null) {
         throw new Error(`Unable to retrieve Asset with Id ${assetId} from CH`);
     }
 
-    asset?.getRelation("InstanceToBackground")?.setIds([entityId]);
+    asset?.getRelation(relationToTarget)?.setIds([entityId as number]);
 
     await client.entities.saveAsync(asset);
 
-    console.log(`Linked Asset with Id ${assetId} to ${entityId} via relation InstanceToBackground`);
+    console.log(`Linked Asset with Id ${assetId} to ${entityId} via relation ${relationToTarget}`);
 
     return true;
 }
