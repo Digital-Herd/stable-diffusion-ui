@@ -1,26 +1,23 @@
 :root {
-    --background-color1: rgb(32, 33, 36); /* main parts of the page */
-    --background-color2: rgb(44, 45, 48); /* main panels */
-    --background-color3: rgb(47, 49, 53);
-    --background-color4: rgb(18, 18, 19); /* settings dropdowns */
+    --background-color1: white; /* main parts of the page */
+    --background-color2: #dddddd; /* main panels */
+    --background-color3: #e7e9eb;
+    --background-color4: #cccccc; /* settings dropdowns */
 
     --accent-hue: 266;
     --accent-lightness: 36%;
     --accent-lightness-hover: 40%;
-
-    --text-color: #eee;
-
+    --text-color: black;
     --input-text-color: black;
-    --input-background-color: #e9e9ed; 
-    --input-border-color: #8f8f9d; 
+    --input-background-color: #f8f9fa;
+    --input-border-color: grey;
 
     --button-text-color: var(--input-text-color);
     --button-color: #e9e9ed;
     --button-border: 1px solid #8f8f9d;
-
     /* other */
     --input-border-radius: 4px;
-    --input-border-size: 1px; 
+    --input-border-size: 1px;
     --accent-color: hsl(var(--accent-hue), 100%, var(--accent-lightness));
     --accent-color-hover: hsl(var(--accent-hue), 100%, var(--accent-lightness-hover));
     --make-image-border: 2px solid hsl(var(--accent-hue), 100%, calc(var(--accent-lightness) - 21%));
