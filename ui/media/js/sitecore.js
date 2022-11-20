@@ -8641,7 +8641,7 @@ function UploadNewMasterFile(config, entityId, imgSrc) {
         const client = yield getAuthenticatedClient(config);
         const resp = yield fetch(imgSrc);
         const buffer = yield resp.arrayBuffer();
-        const uploadSource = new array_buffer_upload_source_1.ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
+        const uploadSource = new array_buffer_upload_source_1.ArrayBufferUploadSource(buffer, 'stablediffusionbg.png');
         const request = new upload_request_1.UploadRequest(uploadSource, 'AssetUploadConfiguration', 'NewMainFile');
         request.actionParameters = {
             AssetId: entityId,
@@ -8660,7 +8660,7 @@ function UploadNewAsset(config, entityId, relationToTarget, imgSrc) {
         const client = yield getAuthenticatedClient(config);
         const resp = yield fetch(imgSrc);
         const buffer = yield resp.arrayBuffer();
-        const uploadSource = new array_buffer_upload_source_1.ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
+        const uploadSource = new array_buffer_upload_source_1.ArrayBufferUploadSource(buffer, 'stablediffusionbg.png');
         const request = new upload_request_1.UploadRequest(uploadSource, 'AssetUploadConfiguration', 'NewAsset');
         const result = yield client.uploads.uploadAsync(request);
         if (!result.isSuccessStatusCode) {

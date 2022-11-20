@@ -78,7 +78,7 @@ class ImageRequest(BaseModel):
     use_stable_diffusion_model: str = "sd-v1-4"
     use_vae_model: str = None
     show_only_filtered_image: bool = False
-    output_format: str = "jpeg" # or "png"
+    output_format: str = "png" # or "png"
 
     stream_progress_updates: bool = False
     stream_image_progress: bool = False

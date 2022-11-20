@@ -42,7 +42,7 @@ export async function UploadNewMasterFile(config: ContentHubConfiguration, entit
     const resp = await fetch(imgSrc)
     const buffer = await resp.arrayBuffer()
 
-    const uploadSource = new ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
+    const uploadSource = new ArrayBufferUploadSource(buffer, 'stablediffusionbg.png');
 
     const request = new UploadRequest(
         uploadSource,
@@ -68,7 +68,7 @@ export async function UploadNewAsset(config: ContentHubConfiguration, entityId: 
     const resp = await fetch(imgSrc)
     const buffer = await resp.arrayBuffer()
 
-    const uploadSource = new ArrayBufferUploadSource(buffer, 'stablediffusionbg.jpg');
+    const uploadSource = new ArrayBufferUploadSource(buffer, 'stablediffusionbg.png');
 
     const request = new UploadRequest(
         uploadSource,

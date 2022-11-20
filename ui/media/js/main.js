@@ -57,6 +57,8 @@ let initialText = document.querySelector("#initial-text")
 let previewTools = document.querySelector("#preview-tools")
 let clearAllPreviewsBtn = document.querySelector("#clear-all-previews")
 
+let cropContainer = document.querySelector("#cropContainer")
+
 let chEndpoint = null;
 let chClientSecret = null;
 let chClientId = null;
@@ -279,7 +281,6 @@ function showImages(reqBody, res, outputContainer, livePreview) {
         imageElem.setAttribute('data-steps', imageInferenceSteps)
         imageElem.setAttribute('data-guidance', imageGuidanceScale)
 
-
         const imageInfo = imageItemElem.querySelector('.imgItemInfo')
         imageInfo.style.visibility = (livePreview ? 'hidden' : 'visible')
 
@@ -293,6 +294,7 @@ function showImages(reqBody, res, outputContainer, livePreview) {
 
             let buttons = [
                 { text: 'Save to DAM', on_click: onSaveToDamClick },
+                { text: 'Crop to circle', on_click: onCropToCircle },
                 { text: 'Use as Input', on_click: onUseAsInputClick },
                 { text: 'Download', on_click: onDownloadImageClick },
                 { text: 'Make Similar Images', on_click: onMakeSimilarClick },
@@ -324,6 +326,66 @@ function showImages(reqBody, res, outputContainer, livePreview) {
             })
         }
     })
+}
+
+function getRoundedCanvas(sourceCanvas) {
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    var width = sourceCanvas.width;
+    var height = sourceCanvas.height;
+
+    canvas.width = width;
+    canvas.height = height;
+    context.imageSmoothingEnabled = true;
+    context.drawImage(sourceCanvas, 0, 0, width, height);
+    context.globalCompositeOperation = 'destination-in';
+    context.beginPath();
+    context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+    context.fill();
+    return canvas;
+}
+
+function onCropToCircle(req, img) {
+    const newImage = img.cloneNode(false);
+    cropContainer.appendChild(newImage);
+
+    var cropper = new Cropper(newImage, {
+        aspectRatio: 1,
+        viewMode: 0,
+        ready: function () {
+            // Crop
+            cropper.zoom(-0.2);
+            let croppedCanvas = cropper.getCroppedCanvas();
+
+            // Round
+            let roundedCanvas = getRoundedCanvas(croppedCanvas);
+
+            img.src = roundedCanvas.toDataURL()
+            cropContainer.innerHTML = '';
+        }
+    });
+    /*
+    fetch(img.src)
+        .then(res => res.blob())
+        .then(blob => {
+            var uri = window.URL.createObjectURL(blob)
+            let resizer = new Croppie(newImage);
+
+            resizer.bind({
+                url: uri,
+                zoom: 0,
+                viewport: { width: 512, height: 512, type: 'circle' }
+            });
+
+            resizer.result({ type: 'base64', size: 'original', format: 'png', quality: 1, circle: true }).then(result => {
+                img.src = result;
+
+                //Cleanup
+                resizer.destroy();
+                window.URL.revokeObjectURL(uri);
+            });
+            
+        });*/
 }
 
 function onSaveToDamClick(req, img) {
